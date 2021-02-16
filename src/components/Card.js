@@ -8,20 +8,25 @@ const Card = (props) => {
       style={{
         width: "200px",
         height: "200px",
-        backgroundColor: "red",
+        backgroundColor: "#222",
         margin: "10px",
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
         justifyContent: "center",
         cursor: "crosshair",
+        borderRadius: "20px",
+        textAlign: 'center',
       }}
-      onClick={() => {processCardClick(name)}}
+      onClick={() => {
+        processCardClick(name);
+      }}
     >
       <img
         style={{
           width: "70%",
           height: "70%",
+          borderRadius: "20px",
         }}
         src={imgUrl}
         alt=""

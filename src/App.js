@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Card from "./components/Card";
+import getRandomFruitsName from "random-fruits-name";
 import "./App.css";
 
 const App = () => {
@@ -12,11 +13,15 @@ const App = () => {
     if (clicked.find((item) => item === name)) {
       setScore(0);
       setClicked([]);
+      loadCards();
     } else {
       setClicked((clicked) => [...clicked, name]);
       setScore(score + 1);
       if (record < score + 1) {
         setRecord(score + 1);
+      }
+      if(score+1 === 12) {
+        setScore('12 ! Good job.')
       }
     }
 
@@ -28,13 +33,46 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    const cocoUrl =
-      "https://www.mensjournal.com/wp-content/uploads/2020/02/Coconut.jpg?w=1200&h=675&crop=1&quality=86&strip=all&iswp=1";
-
+  const loadCards = () => {
+    let nameBase = [];
+    let promiseList = [];
+    let tempCards = [];
     for (let i = 0; i < 12; i++) {
-      setCards((cards) => [...cards, { name: "coconut" + i, url: cocoUrl }]);
+      let foo;
+      do {
+        foo = getRandomFruitsName();
+      } while (nameBase.find((item) => item === foo));
+
+      nameBase = [...nameBase, foo];
+
+      promiseList[
+        i
+      ] = fetch(
+        "https://api.giphy.com/v1/gifs/translate?api_key=YgSMbNVTn9H2yFPan735riidNHosuAno&s=" +
+          foo,
+        { mode: "cors" }
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((response) => {
+          tempCards = [
+            ...tempCards,
+            { name: foo, url: response.data.images.original.url },
+          ];
+        })
+        .catch((e) => {
+          throw e;
+        });
     }
+
+    Promise.all([...promiseList]).then(() => {
+      setCards(tempCards);
+    });
+  };
+
+  useEffect(() => {
+    loadCards();
   }, []);
 
   return (
